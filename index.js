@@ -91,3 +91,9 @@ let showMap = (function() {
   }
   return showMap;
 })();
+
+
+
+// Usage:
+let a  =  [0,1,2,2,3,3,6,7,7,7];
+showMap(a); // Outputs to console
