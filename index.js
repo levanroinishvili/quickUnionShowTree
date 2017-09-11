@@ -1,18 +1,26 @@
 let showMap = (function() {
+  // Block is an array of strings where every string has equal length between themselves
   function blockWdith(b) {
-    if ( !b.length ) return 0; else return b[0].length;
+    return b.length ? b[0].length : 0 ;
   }
+  
+  // arr is an array of integers that encodes a tree:
+  // each element in the array has a parent - itself or another element in the array.
+  // each element points to its parent in this way:
+  // Element's integer value is an index of the parent inside arr.
   function getChildren(arr,i) {
-    // arr = an array each element of which is an index
-    // pointing to the parent of that element
-    // Returns an array of all children
+    // Returns an array of all children of element with index i inside arr
     children = [];
     arr.forEach((v,j) => {
       if ( v===i && i!==j) children.push(j);
     });
     return children;
   }
+  
   function blockPad(a,b) {
+    // Given two blocks that will be merged into a larger block (by mergeBlock function)
+    // Create the third block which may go between these two blocks
+    // to visually separate the two blocks.
     let pad = '  ', separator = '|';
     let leftPad  = (a.length?pad:'');
     let rightPad = (b.length?pad:'');
@@ -22,11 +30,12 @@ let showMap = (function() {
     //return [' '.repeat(Math.max(a.length,b.length))];
     //return ['  |  '];
   }
+  
   function mergeBlocks() {
     // Merge rectangular blocks.
-    // b1 is an array of strings of equal length
-    // b2 is an array of strings of equal length
-    // Returns a merged block - array of strings of equal lengths
+    // Returns resulting rectengular blocks with spaces added in the right places
+    // Usage:
+    //     let b = mergeBlocks(b1,b2,b3,...,bn); // each bi is a block
     if ( arguments.length === 0 ) return [];
     if ( arguments.length === 1 ) return arguments[0];
     let b1=arguments[0];
@@ -45,6 +54,8 @@ let showMap = (function() {
     }
     return b1;
   }
+  
+  // Take a rectangular block b and expand it to width w
   function widenBlock(b,w) {
     return b.map(row=>{
       if ( row.length<w ) {
@@ -55,6 +66,9 @@ let showMap = (function() {
       return row;
     });
   }
+  
+  // Recursive function that will (eventually;) return a block
+  // representing graphically the node i within arr, with all its descendants
   function buildChild(arr,i) {
     let block = [];
     let children = getChildren(arr,i);
@@ -72,6 +86,9 @@ let showMap = (function() {
     block.unshift(top);
     return block;
   }
+  
+  // Build a graphical map of the tree encoded in arr.
+  // Take all roots, build their maps, then merge
   function buildMap(arr) {
     let map = [];
     arr
@@ -82,6 +99,8 @@ let showMap = (function() {
       });
     return mergeBlocks(map,blockPad(map,[]),[]);
   }
+  
+  // Output to console graphical map of the tree encoded in arr.
   function showMap(arr) {
     console.log(
       buildMap(arr)
@@ -89,6 +108,8 @@ let showMap = (function() {
         .join('\n')
       );
   }
+  
+  // Only expose showMap() function to the world
   return showMap;
 })();
 
