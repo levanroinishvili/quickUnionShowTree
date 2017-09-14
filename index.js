@@ -133,7 +133,7 @@ let showMap = (function() {
     if ( isCursed(arr) ) {
       arr = arr.slice();
       bless(arr);
-      console.log('The array contains infinite loops. This will be broken for display.');
+      console.log('The array contains infinite loops. These will be broken for display.');
     }
     console.log(
       buildMap(arr)
