@@ -17,6 +17,33 @@ let showMap = (function() {
     return children;
   }
   
+  // Check if the array contains an infinite loop, when considered as a tree
+  // This is ineficient, but making it efficient may itself be inefficient,
+  // as I will only use these on very small trees for demonstration
+  function isCursed(a) {
+    for (elem of a) {
+      let parent, count=0;
+      while ( (parent=a[elem]) !==elem) {
+        if ( ++count >= a.length ) return true; 
+        elem = a[elem];
+      }
+    }
+    return false;
+  }
+
+  // Check for infinite loops and 'heal' them
+  // Also inefficient - see comment above
+  function bless(a) {
+    for (let i=0; i<a.length; i++) {
+      if ( a[i]===i ) continue;
+
+      let parent=a[i], count=1;
+      while ( ++count<a.length && (parent=a[parent])!==i ) ;
+
+      if ( parent === i ) a[i]=i; // Remove loop at point i
+    }
+  }
+
   function blockPad(a,b) {
     // Given two blocks that will be merged into a larger block (by mergeBlock function)
     // Create the third block which may go between these two blocks
@@ -86,7 +113,7 @@ let showMap = (function() {
     block.unshift(top);
     return block;
   }
-  
+
   // Build a graphical map of the tree encoded in arr.
   // Take all roots, build their maps, then merge
   function buildMap(arr) {
@@ -99,9 +126,15 @@ let showMap = (function() {
       });
     return mergeBlocks(map,blockPad(map,[]),[]);
   }
-  
-  // Output to console graphical map of the tree encoded in arr.
+
+  // Output to console textual-graphical map of the tree encoded within arr.
   function showMap(arr) {
+    // if ( isCursed(arr) ) throw new Error('The array contains an infinite loop');
+    if ( isCursed(arr) ) {
+      arr = arr.slice();
+      bless(arr);
+      console.log('The array contains infinite loops. This will be broken for display.');
+    }
     console.log(
       buildMap(arr)
         //.map(s=>'|'+s+'|')
@@ -118,3 +151,5 @@ let showMap = (function() {
 // Usage:
 let a  =  [0,1,2,2,3,3,6,7,7,7];
 showMap(a); // Outputs to console
+
+
